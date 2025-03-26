@@ -26,4 +26,13 @@ public class ProductController {
         List<Product> products = productDao.getAllProducts();
         productView.displayProduct(products);
     }
+
+    public void addTempProductList(String name, double price, int quantity, LocalDate date) {
+        productDao.tempProductList(new Product(name,price,quantity,date));
+    }
+
+    public void showTempProductList() {
+        List<Product> tempProducts = productDao.gettempProductList();
+        productView.displayProduct(tempProducts);
+    }
 }

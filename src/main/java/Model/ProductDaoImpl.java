@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDaoImpl implements ProductDao {
+    private List<Product> tempProducts = new ArrayList<>();
 
     @Override
     public void addProduct(Product product) {
@@ -51,5 +52,17 @@ public class ProductDaoImpl implements ProductDao {
 
         System.out.println("Total products fetched: " + products.size());
         return products;
+    }
+
+    public void tempProductList(Product product) {
+        tempProducts.add(product);
+        System.out.println("Product temporarily added: " + product);
+    }
+
+    public List<Product> gettempProductList(){
+        return tempProducts;
+    }
+    public void updateProduct(Product product) {
+
     }
 }
