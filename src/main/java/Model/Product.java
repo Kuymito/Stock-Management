@@ -10,7 +10,6 @@ public class Product {
     private LocalDate importedDate;
     public Product() {}
 
-
     public Product( String name, double unitPrice, int stockQuantity, LocalDate importedDate) {
         this.name = name;
         this.unitPrice = unitPrice;

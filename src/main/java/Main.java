@@ -1,16 +1,17 @@
 import Controller.ProductController;
+import Model.Product;
+import Model.ProductDao;
 import Model.ProductDaoImpl;
 import View.ProductView;
 import Model.Validate;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
-
 
 public class Main {
     public static void main(String[] args) {
         ProductController controller = new ProductController(new ProductDaoImpl(),new ProductView());
         controller.showAllProducts();
-
         Scanner scanner = new Scanner(System.in);
 
         while(true){

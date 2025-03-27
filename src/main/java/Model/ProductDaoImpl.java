@@ -6,17 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDaoImpl implements ProductDao {
-
     @Override
     public void addProduct(Product product) {
-        String query = "insert into products (name, unit_price, stock_quantity, imported_date) values(?,?,?,?)";
-        try (Connection con = Connect.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = Connect.getConnection();
+            con.setAutoCommit(true);
+            String query = "INSERT INTO products (name, unit_price, stock_quantity, imported_date) VALUES (?, ?, ?, ?)";
+            ps = con.prepareStatement(query);
             ps.setString(1, product.getName());
             ps.setDouble(2, product.getUnitPrice());
             ps.setInt(3, product.getStockQuantity());
             ps.setDate(4, Date.valueOf(product.getImportedDate()));
-            ps.executeUpdate();
+            int rowsInserted = ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to add product to database.", e);
         }
@@ -86,7 +89,6 @@ public class ProductDaoImpl implements ProductDao {
                 double unitPrice = rs.getDouble(3);
                 int stockQuantity = rs.getInt(4);
                 Date importedDate = rs.getDate(5);
-
                 LocalDate localDate = (importedDate != null) ? importedDate.toLocalDate() : null;
                 Product product = new Product(id, name, unitPrice, stockQuantity, localDate);
                 products.add(product);
