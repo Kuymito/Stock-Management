@@ -22,6 +22,14 @@ public class ProductController {
         productDao.addProduct(new Product(name,price,quantity,date));
     }
 
+    public void updateProduct(int id, String name, double price, int quantity, LocalDate date) {
+        productDao.updateProduct(new Product(id, name, price, quantity, date));
+    }
+
+    public void deleteProduct(int id) {
+        productDao.deleteProduct(id);
+    }
+
     public void showAllProducts() {
         List<Product> products = productDao.getAllProducts();
         productView.displayProduct(products);
