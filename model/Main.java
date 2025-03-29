@@ -1,6 +1,5 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -9,33 +8,64 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         ProductController controller = new ProductController();
         ProductView view = new ProductView();
-        List<Product> products1 = new ArrayList<>();
-        view.displayProductList(products1);
-        
+
         int rowsPerPage = 5;
+        int currentPage = 1;
+        int totalRecords = controller.getTotalProductCount();
+        int totalPages = (int) Math.ceil((double) totalRecords / rowsPerPage);
 
         while (true) {
-            System.out.println("\nW) Write   R) Read   U) Update    D) Delete    S) Search    SR) Set Rows   ");
-            System.out.println("Sa) Save    Un) Unsave    Ba) Backup    Re) Restore     E) Exit");
-            System.out.print("Enter your choice: ");
+            List<Product> products = controller.displayProducts(currentPage, rowsPerPage);
+            view.displayProductList(products, currentPage, totalPages, totalRecords);
+
+            System.out.print("\nChoose an option: ");
             String choice = scanner.nextLine().trim().toUpperCase();
 
             switch (choice) {
-                case "W":
-                    Product newProduct = view.inputProductDetails();
-                    if (controller.insertProduct(newProduct)) {
-                        view.displayMessage("Product added successfully.");
+                case "N":
+                    if (currentPage < totalPages) {
+                        currentPage++;
                     } else {
-                        view.displayMessage("Failed to add product.");
+                        System.out.println("You are on the last page.");
                     }
                     break;
 
-                case "R":
+                case "P":
+                    if (currentPage > 1) {
+                        currentPage--;
+                    } else {
+                        System.out.println("You are on the first page.");
+                    }
+                    break;
+
+                case "F":
+                    currentPage = 1;
+                    break;
+
+                case "L":
+                    currentPage = totalPages;
+                    break;
+
+                case "G":
                     System.out.print("Enter page number: ");
-                    int page = scanner.nextInt();
+                    int gotoPage = scanner.nextInt();
                     scanner.nextLine();
-                    List<Product> products = controller.displayProducts(page, rowsPerPage);
-                    view.displayProductList(products);
+                    if (gotoPage >= 1 && gotoPage <= totalPages) {
+                        currentPage = gotoPage;
+                    } else {
+                        System.out.println("Invalid page number.");
+                    }
+                    break;
+
+                case "W":
+                    Product newProduct = view.inputProductDetails();
+                    if (controller.insertProduct(newProduct)) {
+                        totalRecords++;
+                        totalPages = (int) Math.ceil((double) totalRecords / rowsPerPage);
+                        System.out.println("Product added successfully.");
+                    } else {
+                        System.out.println("Failed to add product.");
+                    }
                     break;
 
                 case "U":
@@ -47,12 +77,12 @@ public class Main {
                         Product updatedProduct = view.inputProductDetails();
                         updatedProduct.setId(updateId);
                         if (controller.updateProduct(updatedProduct)) {
-                            view.displayMessage("Product updated successfully.");
+                            System.out.println("Product updated successfully.");
                         } else {
-                            view.displayMessage("Failed to update product.");
+                            System.out.println("Failed to update product.");
                         }
                     } else {
-                        view.displayMessage("Product not found.");
+                        System.out.println("Product not found.");
                     }
                     break;
 
@@ -61,23 +91,26 @@ public class Main {
                     int deleteId = scanner.nextInt();
                     scanner.nextLine();
                     if (controller.deleteProduct(deleteId)) {
-                        view.displayMessage("Product deleted successfully.");
+                        totalRecords--;
+                        totalPages = (int) Math.ceil((double) totalRecords / rowsPerPage);
+                        System.out.println("Product deleted successfully.");
                     } else {
-                        view.displayMessage("Failed to delete product.");
+                        System.out.println("Failed to delete product.");
                     }
                     break;
 
                 case "S":
                     String searchName = view.getSearchName();
                     List<Product> searchResults = controller.searchByName(searchName);
-                    view.displayProductList(searchResults);
+                    view.displayProductList(searchResults, 1, 1, searchResults.size());
                     break;
 
                 case "SR":
                     System.out.print("Enter number of rows per page: ");
                     rowsPerPage = scanner.nextInt();
                     scanner.nextLine();
-                    view.displayMessage("Rows per page set to " + rowsPerPage);
+                    totalPages = (int) Math.ceil((double) totalRecords / rowsPerPage);
+                    System.out.println("Rows per page set to " + rowsPerPage);
                     break;
 
                 case "E":
