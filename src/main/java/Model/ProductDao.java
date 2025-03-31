@@ -21,9 +21,9 @@ public interface ProductDao {
     void deleteAllProducts();
     List<Product> readCSV(String filename);
     void insertCSVToDB(List<Product> products);
-    public int getMaxProductId();
-    public void truncateTable(boolean restartIdentity);
-    public void resetSequenceTo(int value);
-    public int getCurrentSequenceValue();
+    int getMaxProductId();
+    void truncateTable(boolean restartIdentity);
+    void resetSequenceTo(int value);
+    int getCurrentSequenceValue();
 
 }

@@ -2,6 +2,8 @@ package Controller;
 
 import Model.Product;
 import Model.ProductDao;
+import Model.Validate;
+import Model.ValidationException;
 import View.ProductView;
 
 import java.time.LocalDate;
@@ -24,16 +26,18 @@ public class ProductController {
     public List<Product> getAllProducts() {
         return productDao.getAllProducts();
     }
-//    public void showAllProducts() {
-//        List<Product> products = productDao.getAllProducts();
-//        productView.displayProduct(products);
-//    }
-public ProductView getView() {
-    return this.productView;
-}
+
+    public ProductView getView() {
+        return this.productView;
+    }
+
+    public int getNextAvailableId() {
+        return productDao.getMaxProductId() + 1;
+    }
 
     public void addTempProductList(String name, double price, int quantity, LocalDate date) {
-        productDao.tempProductList(new Product(name,price,quantity,date));
+        int nextId = getNextAvailableId();
+        productDao.tempProductList(new Product(nextId, name, price, quantity, date));
     }
 
     public void showTempProductList() {
@@ -130,7 +134,11 @@ public ProductView getView() {
 
     public void getProductByName(String name) {
         List<Product> productList = productDao.getProductByName(name);
-        productView.display1Product(productList);
+        if(productList.isEmpty()) {
+            System.out.println("Product not found");
+        }else{
+            productView.display1Product(productList);
+        }
     }
 
     public void backUpProductToCSV(List<Product> productList,String filename) {
@@ -141,48 +149,26 @@ public ProductView getView() {
         return productDao.getAllProducts();
     }
 
-//    public void insertCSVDataIntoDatabase(List<Product> products) {
-//        if (!products.isEmpty()) {
-//            try {
-//                productDao.deleteAllProducts();
-//                System.out.println("All existing data deleted.");
-//
-//                    try {
-//                        productDao.insertCSVToDB(products);
-//                    } catch (Exception e) {
-//                        for (Product product : products) {
-//                            System.err.println("Failed to insert product: " + product.getName() + " - " + e.getMessage());
-//                        }
-//                    }
-//
-//                System.out.println("CSV data inserted into the database.");
-//            } catch (Exception e) {
-//                System.err.println("Error during deletion or insertion: " + e.getMessage());
-//            }
-//        } else {
-//            System.out.println("No products available to insert.");
-//        }
-//    }
+
 
     public boolean restoreFromBackup(List<Product> backupData) {
         try {
-            // Get current max ID before truncate
-            int preTruncateMaxId = productDao.getMaxProductId();
+            if(backupData!=null && !backupData.isEmpty()) {
+                int preTruncateMaxId = productDao.getMaxProductId();
 
-            // Truncate table and reset sequence
-            productDao.deleteAllProducts();
+                productDao.deleteAllProducts();
 
-            // Insert backup data
-            productDao.insertCSVToDB(backupData);
+                productDao.insertCSVToDB(backupData);
 
-            // Get new max ID from restored data
-            int restoredMaxId = productDao.getMaxProductId();
+                int restoredMaxId = productDao.getMaxProductId();
+                int newSequenceStart = Math.max(preTruncateMaxId, restoredMaxId);
+                productDao.resetSequenceTo(newSequenceStart + 1);
 
-            // Set sequence to the higher of the two values
-            int newSequenceStart = Math.max(preTruncateMaxId, restoredMaxId);
-            productDao.resetSequenceTo(newSequenceStart + 1);
+                return true;
+            }else {
+                return false;
+            }
 
-            return true;
         } catch (Exception e) {
             System.err.println("Restore failed: " + e.getMessage());
             return false;
@@ -191,6 +177,32 @@ public ProductView getView() {
 
     public List<Product> readCSV(String filename) {
         return productDao.readCSV(filename);
+    }
+
+    public boolean validateProductInputs(String name, double price, int stock) {
+        try {
+            Validate.validateProduct(name, price, stock);
+            return true;
+        } catch (ValidationException e) {
+            System.out.println("Validation errors:");
+            for (String error : e.getErrors()) {
+                System.out.println("- " + error);
+            }
+            return false;
+        }
+    }
+
+    public boolean validateProductInputs(int id, String name, double price, int stock) {
+        try {
+            Validate.validateProduct(id, name, price, stock);
+            return true;
+        } catch (ValidationException e) {
+            System.out.println("Validation errors:");
+            for (String error : e.getErrors()) {
+                System.out.println("- " + error);
+            }
+            return false;
+        }
     }
 
 }

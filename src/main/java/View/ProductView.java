@@ -46,10 +46,10 @@ public class ProductView {
     }
 
     public void showMenuOptions() {
+        System.out.println("P) Previous Page  N) Next Page  G) Go to Page  E) Exit");
         System.out.println("\nMAIN MENU:");
         System.out.println("W) Write  R) Read  U) Update  D) Delete  S) Search");
         System.out.println("Se) Set Rows  Sa) Save  Un) Unsave  Ba) Backup  Re) Restore");
-        System.out.println("P) Previous Page  N) Next Page  G) Go to Page  E) Exit");
         System.out.print("Enter your choice: ");
     }
     public void displayTempProducts(List<Product> products) {
