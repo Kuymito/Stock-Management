@@ -12,9 +12,8 @@ public class Validate {
     private static final String NAME_REGEX = "^[a-zA-Z0-9\\s-]+$";
     private static Pattern namePattern;
 
-    private Validate() {}  // Private constructor to prevent instantiation
+    private Validate() {}
 
-    // Validate that an object is not null
     public static void notNull(Object obj, String message) throws ValidationException {
         if (obj == null) {
             throw new ValidationException(List.of(message));
