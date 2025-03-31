@@ -1,5 +1,7 @@
 package View;
-
+import org.nocrala.tools.texttablefmt.BorderStyle;
+import org.nocrala.tools.texttablefmt.ShownBorders;
+import org.nocrala.tools.texttablefmt.Table;
 import Model.Product;
 
 import java.util.List;
