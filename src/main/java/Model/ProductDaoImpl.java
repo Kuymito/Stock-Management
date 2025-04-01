@@ -349,7 +349,7 @@ public class ProductDaoImpl implements ProductDao {
         List<Product> products = new ArrayList<>();
         String defaultPath = "D:\\CSV\\";
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(defaultPath + filePath + ".csv"))) {
             String line;
